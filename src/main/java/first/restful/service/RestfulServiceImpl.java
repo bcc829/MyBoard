@@ -87,4 +87,34 @@ public class RestfulServiceImpl implements RestfulService {
 		}
 	}
 
+	@Override
+	public String getBoardAllByJson() {
+		ObjectMapper om = new ObjectMapper();
+		List<Map<String, Object>> boardAll = restfulDAO.getBoardAll();
+		if(boardAll == null){
+			return "{\"result\": \"false\"}";
+		}
+		
+		else{
+			String jsonStr = "";
+			try {
+				Map<String, Object> json = new HashMap<String, Object>();
+				json.put("result", "true");
+				json.put("boardList", boardAll);
+				jsonStr = om.writeValueAsString(json);
+			} catch (JsonGenerationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return jsonStr;
+	   }
+    }
+
 }

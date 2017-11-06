@@ -10,5 +10,7 @@ public interface RestfulService {
 	String getUserInfoByJson(String USER_ID);
 
 	String getUserInfoAllByJson();
+
+	String getBoardAllByJson();
 	
 }

@@ -30,4 +30,10 @@ public class RestfulController {
 	public String getUserAll(){
 		return restfulService.getUserInfoAllByJson();
 	}
+	
+	@RequestMapping(value="/rest/board.rest", method = RequestMethod.GET, produces = "application/json; charset=utf8")
+	@ResponseBody
+	public String getBoardAll(){
+		return restfulService.getBoardAllByJson();
+	}
 }

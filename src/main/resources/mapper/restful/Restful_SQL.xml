@@ -25,5 +25,13 @@
 				USER_TABLE	
 		]]>
 	</select>
-
+	
+	<select id="selectBoardAll" resultType="hashmap">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				TB_BOARD	
+		]]>
+	</select>
 </mapper>
