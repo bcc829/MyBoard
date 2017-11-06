@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sample">
+	
+<select id="selectBoardList" parameterType="hashmap" resultType="hashmap">
+    <include refid="common.pagingPre"/> 
+    <![CDATA[
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY IDX DESC) RNUM,
+            IDX,
+            TITLE,
+            HIT_CNT,
+            CREA_DTM
+        FROM
+            TB_BOARD
+        WHERE
+            DEL_GB = 'N'
+    ]]>
+    <include refid="common.pagingPost"/> 
+</select>
+
+	
+	<insert id="insertBoard" parameterType="hashmap" useGeneratedKeys="true" keyProperty="IDX">
+		<selectKey keyProperty="IDX" resultType="string" order="BEFORE">
+			SELECT SEQ_TB_BOARD_IDX.NEXTVAL FROM DUAL
+		</selectKey>
+		<![CDATA[
+			
+			INSERT INTO TB_BOARD
+			(
+				IDX,
+			    TITLE, 
+			    CONTENTS, 
+			    HIT_CNT, 
+			    DEL_GB, 
+			    CREA_DTM, 
+			    CREA_ID
+			)
+			VALUES
+			(
+				#{IDX}, 
+			    #{TITLE}, 
+			    #{CONTENTS}, 
+			    0, 
+			    'N', 
+			    SYSDATE, 
+			    #{CREA_ID}
+			)
+		]]>
+	</insert>
+	
+	<update id="updateHitCnt" parameterType="hashmap">
+		<![CDATA[
+			UPDATE TB_BOARD 
+			SET
+				HIT_CNT = NVL(HIT_CNT, 0) + 1
+			WHERE
+				IDX = #{IDX}	
+		]]>
+	</update>
+	
+	<select id="selectBoardDetail" parameterType="hashmap" resultType="hashmap">
+		<![CDATA[
+			SELECT
+				IDX,
+				HIT_CNT,
+				CREA_ID,
+				CREA_DTM,
+				TITLE,
+				CONTENTS
+			FROM
+				TB_BOARD
+			WHERE
+				IDX = #{IDX}		
+		]]>
+	</select>
+	
+	<update id="updateBoard" parameterType="hashmap">
+		<![CDATA[
+			UPDATE TB_BOARD 
+			SET
+				TITLE = #{TITLE},
+				CONTENTS = #{CONTENTS}
+			WHERE
+				IDX = #{IDX}	
+		]]>
+	</update>
+	
+	<update id="deleteBoard" parameterType="hashmap">
+		<![CDATA[
+			UPDATE TB_BOARD
+			SET
+				DEL_GB = 'Y'
+			WHERE
+				IDX = #{IDX}
+		]]>
+	</update>
+	
+	<insert id="insertFile" parameterType="hashmap">
+		<![CDATA[
+			INSERT INTO TB_FILE
+			(
+				IDX,
+				BOARD_IDX,
+				ORIGINAL_FILE_NAME,
+				STORED_FILE_NAME,
+				FILE_SIZE,
+				CREA_ID
+			)
+			VALUES
+			(
+				SEQ_TB_FILE_IDX.NEXTVAL,
+				#{BOARD_IDX},
+				#{ORIGINAL_FILE_NAME},
+				#{STORED_FILE_NAME},
+				#{FILE_SIZE},
+				'Admin'
+			)
+		]]>
+	</insert>
+	
+<select id="selectFileList" parameterType="hashmap" resultType="hashmap">
+    <![CDATA[
+        SELECT
+            IDX,
+            ORIGINAL_FILE_NAME,
+            ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
+        FROM
+            TB_FILE
+        WHERE
+            BOARD_IDX = #{IDX}
+            AND DEL_GB = 'N'
+    ]]>
+</select>
+
+<update id="deleteFileList" parameterType="hashmap">
+	<![CDATA[
+		UPDATE TB_FILE SET
+			DEL_GB = 'Y'
+		WHERE
+		 	BOARD_IDX = #{IDX}
+	]]>
+</update>
+
+<update id="updateFile" parameterType="hashmap">
+	<![CDATA[
+		UPDATE TB_FILE SET
+			DEL_GB = 'N'
+		WHERE
+			IDX = #{FILE_IDX}
+	]]>
+</update>
+
+<select id="searchBoardList" parameterType="hashmap" resultType="hashmap">
+    <![CDATA[ 
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY IDX DESC) RNUM,
+            IDX,
+            TITLE,
+            HIT_CNT,
+            CREA_DTM
+        FROM
+            TB_BOARD
+     	WHERE
+     	
+     		DEL_GB = 'N' AND IDX > #{startIndex} AND IDX < #{endIndex}
+    ]]>
+</select>
+
+<select id="selectFileListByIndex" parameterType="hashmap" resultType="hashmap">
+    <![CDATA[
+        SELECT
+            IDX,
+            BOARD_IDX,
+            ORIGINAL_FILE_NAME,
+            ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
+        FROM
+            TB_FILE
+        WHERE
+            BOARD_IDX > #{startIndex} AND BOARD_IDX < #{endIndex} AND DEL_GB = 'N'
+    ]]>
+</select>
+
+<select id="seletBoardListAndFileListWithJoin" parameterType="hashmap" resultMap="myBoardList">
+	<![CDATA[
+		SELECT
+			B.IDX,
+			B.TITLE,
+			B.HIT_CNT,
+			B.CREA_DTM,
+			A.ORIGINAL_FILE_NAME,
+			A.BOARD_IDX,
+			A.FILE_SIZE
+		FROM
+			TB_BOARD B LEFT JOIN TB_FILE A
+		ON
+			B.IDX = A.BOARD_IDX
+		WHERE 
+			B.IDX > #{startIndex} AND B.IDX < #{endIndex} 	
+	]]>
+</select>
+
+	<resultMap type="first.sample.vo.BoardListAndFileListVO" id="myBoardList">
+		<id property="boardIdx" column="IDX"/>
+		<result property="boardTitle" column="TITLE"/>
+		<result property="hitCnt" column="HIT_CNT"/>
+		<result property="creaDtm" column="CREA_DTM"/>
+		<collection property="fileList" javaType="java.util.ArrayList" resultMap="fileListResultMap"/>
+	</resultMap>
+	<resultMap type="first.sample.vo.FileListVO" id="fileListResultMap">
+		<id property="fileIdx" column="BOARD_IDX"/>
+		<result property="originalFileName" column="ORIGINAL_FILE_NAME"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+	</resultMap>
+</mapper>
