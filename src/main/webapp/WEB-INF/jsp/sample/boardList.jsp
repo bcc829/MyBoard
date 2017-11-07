@@ -62,7 +62,7 @@
 
 							<td>${row.IDX }</td>
 
-							<td class="title"><a href="#this" name="title">${row.TITLE }</a>
+							<td class="title"><a href="#this" name="title"><c:out value="${row.TITLE }"/></a>
 
 								<input type="hidden" id="IDX" value="${row.IDX }"></td>
 

@@ -28,14 +28,24 @@ public class SampleServiceImpl implements SampleService{
 	@Override
 	@Cacheable(value="boardList")
 	public Map<String, Object> selectBoardList(Map<String, Object> map) throws Exception  {
-		return sampleDAO.selectBoardList(map);
 		
+		Map<String, Object> boardList = sampleDAO.selectBoardList(map);
+
+		return boardList;
 	}
 
 	@Override
 	public void insertBoard(Map<String, Object> map, HttpServletRequest request) throws Exception {
 		//map.put("CREA_ID", session.getAttribute("USER_ID"));
 		map.put("CREA_ID", request.getSession().getAttribute("USER_ID"));
+	    //script실행 방지용 코드 삽입
+	    String encodeTitle = (String) map.get("TITLE");
+	    String encodeContents = (String) map.get("CONTENTS");
+	    encodeTitle = encodeTitle.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	    encodeContents = encodeContents.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	    map.put("TITLE", encodeTitle);
+	    map.put("CONTENTS", encodeContents);
+	    
 		sampleDAO.insertBoard(map);
 		
 		List<Map<String,Object>> list = fileUtils.parseInsertFileInfo(map, request);
@@ -54,8 +64,8 @@ public class SampleServiceImpl implements SampleService{
 	    //script실행 방지용 코드 삽입
 	    String encodeTitle = (String) tempMap.get("TITLE");
 	    String encodeContents = (String) tempMap.get("CONTENTS");
-	    encodeTitle = encodeTitle.replaceAll("(?i)<script", "&lt;script");
-	    encodeContents = encodeContents.replaceAll("(?i)<script", "&lt;script");
+	    encodeTitle = encodeTitle.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	    encodeContents = encodeContents.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	    tempMap.put("TITLE", encodeTitle);
 	    tempMap.put("CONTENTS", encodeContents);
 	 
