@@ -26,6 +26,7 @@ public class SampleServiceImpl implements SampleService{
 	private SampleDAO sampleDAO;
 	
 	@Override
+	@Cacheable(value="boardList")
 	public Map<String, Object> selectBoardList(Map<String, Object> map) throws Exception  {
 		return sampleDAO.selectBoardList(map);
 		
@@ -49,6 +50,16 @@ public class SampleServiceImpl implements SampleService{
 
 	    Map<String, Object> resultMap = new HashMap<String,Object>();
 	    Map<String, Object> tempMap = sampleDAO.selectBoardDetail(map);
+	    
+	    //script실행 방지용 코드 삽입
+	    String encodeTitle = (String) tempMap.get("TITLE");
+	    String encodeContents = (String) tempMap.get("CONTENTS");
+	    encodeTitle = encodeTitle.replaceAll("(?i)<script", "&lt;script");
+	    encodeContents = encodeContents.replaceAll("(?i)<script", "&lt;script");
+	    tempMap.put("TITLE", encodeTitle);
+	    tempMap.put("CONTENTS", encodeContents);
+	 
+	    
 	    resultMap.put("map", tempMap);	     
 	    List<Map<String,Object>> list = sampleDAO.selectFileList(map);
 	    resultMap.put("list", list);
