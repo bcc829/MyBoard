@@ -23,6 +23,10 @@ public class RestfulDAO extends AbstractDAO{
 	public List<Map<String, Object>> getBoardAll(){
 		return (List<Map<String, Object>>)super.selectList("selectBoardAll");
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getBoardInfo(Map<String, Object> params){
+		return (Map<String, Object>)super.selectOne("selectBoardInfo", params);
+	}
 	
 }

@@ -36,4 +36,10 @@ public class RestfulController {
 	public String getBoardAll(){
 		return restfulService.getBoardAllByJson();
 	}
+	
+	@RequestMapping(value="rest/board/{IDX}.rest", method = RequestMethod.GET, produces="application/json; charset=utf8")
+	@ResponseBody
+	public String getBoardInfo(@PathVariable String IDX){
+		return restfulService.getBoardInfo(IDX);
+	}
 }

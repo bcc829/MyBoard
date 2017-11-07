@@ -34,4 +34,15 @@
 				TB_BOARD	
 		]]>
 	</select>
+	
+	<select id="selectBoardInfo" parameterType="hashmap" resultType="hashmap">
+		<![CDATA[
+			SELECT
+			 	*
+			 FROM
+			 	TB_BOARD
+			 WHERE
+			 	IDX = #{IDX}		
+		]]>
+	</select>
 </mapper>

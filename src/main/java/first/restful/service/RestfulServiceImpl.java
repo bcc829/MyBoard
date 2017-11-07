@@ -18,24 +18,23 @@ import first.restful.dao.RestfulDAO;
 
 @Service("restfulService")
 public class RestfulServiceImpl implements RestfulService {
-	
+
 	protected Log log = LogFactory.getLog(this.getClass());
-	
-	@Resource(name="restfulDAO")
+
+	@Resource(name = "restfulDAO")
 	RestfulDAO restfulDAO;
-	
+
 	@Override
-	public String getUserInfoByJson(String USER_ID)  {
+	public String getUserInfoByJson(String USER_ID) {
 		Map<String, Object> param = new HashMap<String, Object>();
 		Map<String, Object> userInfo = new HashMap<String, Object>();
 		ObjectMapper om = new ObjectMapper();
 
 		param.put("USER_ID", USER_ID);
 		userInfo = restfulDAO.getUserInfo(param);
-		if(userInfo == null){
+		if (userInfo == null) {
 			return "{\"result\": \"false\"}";
-		}
-		else{
+		} else {
 			String jsonStr = "";
 			try {
 				Map<String, Object> json = new HashMap<String, Object>();
@@ -52,7 +51,7 @@ public class RestfulServiceImpl implements RestfulService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			return jsonStr;
 		}
 	}
@@ -61,11 +60,11 @@ public class RestfulServiceImpl implements RestfulService {
 	public String getUserInfoAllByJson() {
 		ObjectMapper om = new ObjectMapper();
 		List<Map<String, Object>> userInfoAll = restfulDAO.getUserInfoAll();
-		if(userInfoAll == null){
+		if (userInfoAll == null) {
 			return "{\"result\": \"false\"}";
 		}
-		
-		else{
+
+		else {
 			String jsonStr = "";
 			try {
 				Map<String, Object> json = new HashMap<String, Object>();
@@ -82,7 +81,7 @@ public class RestfulServiceImpl implements RestfulService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			return jsonStr;
 		}
 	}
@@ -91,11 +90,11 @@ public class RestfulServiceImpl implements RestfulService {
 	public String getBoardAllByJson() {
 		ObjectMapper om = new ObjectMapper();
 		List<Map<String, Object>> boardAll = restfulDAO.getBoardAll();
-		if(boardAll == null){
+		if (boardAll == null) {
 			return "{\"result\": \"false\"}";
 		}
-		
-		else{
+
+		else {
 			String jsonStr = "";
 			try {
 				Map<String, Object> json = new HashMap<String, Object>();
@@ -112,9 +111,41 @@ public class RestfulServiceImpl implements RestfulService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			return jsonStr;
-	   }
-    }
 
+			return jsonStr;
+		}
+	}
+	
+	@Override
+	public String getBoardInfo(String IDX) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		Map<String, Object> boardInfo = new HashMap<String, Object>();
+		ObjectMapper om = new ObjectMapper();
+
+		param.put("IDX", IDX);
+		boardInfo = restfulDAO.getBoardInfo(param);
+		if (boardInfo == null) {
+			return "{\"result\": \"false\"}";
+		} else {
+			String jsonStr = "";
+			try {
+				Map<String, Object> json = new HashMap<String, Object>();
+				json.put("result", "true");
+				json.put("board", boardInfo);
+				jsonStr = om.writeValueAsString(json);
+			} catch (JsonGenerationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return jsonStr;
+		}
+
+	}
 }
