@@ -1,11 +1,6 @@
 package first.restful.controller;
 
-import java.io.IOException;
-
 import javax.annotation.Resource;
-
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

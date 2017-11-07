@@ -125,8 +125,4 @@ public class SampleServiceImpl implements SampleService{
 		return sampleDAO.seletBoardListAndFileListWithJoin(map);
 	}
 
-	
-	
-
-
 }
